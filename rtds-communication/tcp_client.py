@@ -2,7 +2,7 @@ import socket
 import yaml
 
 # variable to choose test TCP server or RTDS
-test = False
+test = True
 
 if test:
 	IP = '127.0.0.1'
@@ -19,18 +19,22 @@ else:
 print(IP, PORT)
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((IP, PORT))
+	s.connect((IP, PORT))
 
-	for i in range(20):
-		# define which measurements should be received
-		s.send('frequency_float = MeterCapture("W2");')
-		s.send('sprintf(frequency_string, "W2 = %f END", frequency_float);')
-		s.send('ListenOnPortHandshake(frequency_string);')
+	if test:
+		test_server_reply = s.recv(1024)
+		print(test_server_reply)
+	else:
+		for i in range(20):
+			# define which measurements should be received
+			s.send('frequency_float = MeterCapture("W2");')
+			s.send('sprintf(frequency_string, "W2 = %f END", frequency_float);')
+			s.send('ListenOnPortHandshake(frequency_string);')
 
-		# get measurements
-		tokenstring = s.recv(1024)
-		print('Freqency value at time step ', i, ' is: ', tokenstring)
+			# get measurements
+			tokenstring = s.recv(1024)
+			print('Frequency value at time step ', i, ' is: ', tokenstring)
 
-		# following command is sent to RTDS TCP server to stop
-		# for 1.0 seconds
-		s.send('SUSPEND 1.0;')
+			# following command is sent to RTDS TCP server to stop
+			# for 1.0 seconds
+			s.send('SUSPEND 1.0;')
