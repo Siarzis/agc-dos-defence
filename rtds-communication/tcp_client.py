@@ -18,9 +18,19 @@ else:
 
 print(IP, PORT)
 
-""" with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((IP, PORT))
-    s.sendall(b'Hello, socket!')
-    data = s.recv(1024)
 
-print('Received', repr(data)) """
+	for i in range(20):
+		# define which measurements should be received
+		s.send('frequency_float = MeterCapture("W2");')
+		s.send('sprintf(frequency_string, "W2 = %f END", frequency_float);')
+		s.send('ListenOnPortHandshake(frequency_string);')
+
+		# get measurements
+		tokenstring = s.recv(1024)
+		print('Freqency value at time step ', i, ' is: ', tokenstring)
+
+		# following command is sent to RTDS TCP server to stop
+		# for 1.0 seconds
+		s.send('SUSPEND 1.0;')
