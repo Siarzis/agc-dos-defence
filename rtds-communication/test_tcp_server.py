@@ -1,6 +1,5 @@
 import socket
 
-# TODO: IP, PORT variables must be included in a config file
 IP = '127.0.0.1'
 PORT = 65432
 
