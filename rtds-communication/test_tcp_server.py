@@ -9,20 +9,14 @@ PORT = 65432
 # socket.SOCK_STREAM specify the socket type for TCP 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind((IP, PORT))
-    
-    s.listen()
-    print('Server is working! Waiting for connections...')
-
-    # socket blocks on accept() method
-    conn, addr = s.accept()
-
-    with conn:
-        print('Successful connection from', addr)
-        while True:
-            data = conn.recv(1024)
-            if not data:
-                break
-            else:
-                print(addr, 'says :', data)
-            conn.sendall(data)
+	s.bind((IP, PORT))
+	
+	s.listen()
+	print('Server is working! Waiting for connections...')
+	
+	# socket blocks on accept() method
+	conn, addr = s.accept()
+	
+	with conn:
+		print('Successful connection from', addr)
+		conn.sendall(b'Hello, client!')
