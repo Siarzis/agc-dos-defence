@@ -4,6 +4,8 @@ import struct
 import binascii
 import yaml
 
+from .pi_controller import PI
+
 # variable to choose test TCP server or RTDS
 test = True
 
@@ -21,8 +23,14 @@ else:
 
 print(IP, PORT)
 
+Kp = 1
+Ki = 0.1
+setpoint = 377.0
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_measurements.txt", "w") as f:
 	s.connect((IP, PORT))
+
+	pi_controller = PI(Kp, Ki, setpoint)
 
 	if test:
 		# Test server
@@ -45,6 +53,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_mea
 			
 			# convert hexademical data point to float
 			ang_velocity_float = struct.unpack('>f', binascii.unhexlify(ang_velocity_hex))[0]
+
+
+
 			frequency = ang_velocity_float / (2 * 3.14159265359)
 			print(frequency)
 
