@@ -23,9 +23,9 @@ else:
 
 print(IP, PORT)
 
-Kp = 20.0
-Ki = 0.1
-Kd = 0.05
+Kp = 0.0
+Ki = 0.001
+Kd = 0.0
 setpoint = 377.0
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_measurements.txt", "w") as f:
@@ -57,10 +57,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_mea
 			current_time = time.time_ns() / (10 ** 9)
 			time_diff = current_time - previous_time
 
-			if time_diff > 1.001:
+			if time_diff > 3.001:
 				print(time.time())
 				previous_time = current_time
-				
+
 				# compute Area Control Error (ACE)
 				ace_float = pi(ang_velocity_float)
 				ace = bytearray(struct.pack('>f', ace_float))
