@@ -4,10 +4,10 @@ import struct
 import binascii
 import yaml
 
-from .pi_controller import PI
+from simple_pid import PID
 
-# variable to choose test TCP server or RTDS
-test = True
+# variable to choose test TCP server or RTDS TCP server
+test = False
 
 if test:
 	IP = '127.0.0.1'
@@ -23,14 +23,15 @@ else:
 
 print(IP, PORT)
 
-Kp = 10.0
+Kp = 20.0
 Ki = 0.1
+Kd = 0.05
 setpoint = 377.0
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_measurements.txt", "w") as f:
 	s.connect((IP, PORT))
 
-	PIController = PI(Kp, Ki, setpoint)
+	pi = PID(Kp, Ki, Kd, setpoint=setpoint)
 
 	if test:
 		# Test server
@@ -41,11 +42,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_mea
 	else:
 		# RTDS server
 		
-		# command that sends data to RTDS
-		# s.sendall((1).to_bytes(4, 'big'))
-		
-		# while(True):
-		for i in range(5):
+		previous_time = time.time_ns() / (10 ** 9)
+
+		while(True):
 			ang_velocity = s.recv(4)
 			
 			# convert received data point from bytes to hex
@@ -54,16 +53,19 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_mea
 			# convert hexademical data point to float
 			ang_velocity_float = struct.unpack('>f', binascii.unhexlify(ang_velocity_hex))[0]
 
-			current_timestep = time.time()
-
 			# select sampling time
-			# if time.time % 1
+			current_time = time.time_ns() / (10 ** 9)
+			time_diff = current_time - previous_time
 
-			ace = PIController.calculate_error(current_timestep, ang_velocity_float)
+			if time_diff > 1.001:
+				print(time.time())
+				previous_time = current_time
+				
+				# compute Area Control Error (ACE)
+				ace_float = pi(ang_velocity_float)
+				ace = bytearray(struct.pack('>f', ace_float))
 
-			s.sendall((ace).to_bytes(4, 'big'))
+				s.sendall(ace)
 
-			frequency = ang_velocity_float / (2 * 3.14159265359)
-			print(frequency)
-
-			f.write(str(frequency) + '\n')
+				frequency = ang_velocity_float / (2 * 3.14159265359)
+				f.write(str(ang_velocity_float) + ' ' + str(ace_float) + '\n')
