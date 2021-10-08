@@ -8,7 +8,7 @@ class PI:
 		self.Ki = Ki
 		self.SP = setpoint
 
-	def calculate_error(self, current_timestep, process_value):
+	def compute_error(self, current_timestep, process_value):
 		t, PV = current_timestep, process_value
 		
 		e = self.SP - PV
@@ -33,7 +33,7 @@ class PI:
 	print(process_value, setpoint)
 
 	for i in range(1000):
-		process_value = pi.calculate_error(i, process_value)
+		process_value = pi.compute_error(i, process_value)
 
 		print(process_value, setpoint)
 		# time.sleep(1) """
