@@ -21,8 +21,6 @@ else:
 		except yaml.YAMLError as exc:
 			print(exc)
 
-print(IP, PORT)
-
 Kp = 0.0
 Ki = 0.001
 Kd = 0.0
@@ -30,6 +28,7 @@ setpoint = 377.0
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_measurements.txt", "w") as f:
 	s.connect((IP, PORT))
+	print('Successfully conected to %s:%i' % (IP , PORT))
 
 	pi = PID(Kp, Ki, Kd, setpoint=setpoint)
 
