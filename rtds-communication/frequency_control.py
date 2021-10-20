@@ -45,6 +45,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_mea
 
 		while(True):
 			ang_velocity = s.recv(4)
+			power_gen1 = s.recv(4)
 			
 			# convert received data point from bytes to hex
 			ang_velocity_hex = binascii.hexlify(ang_velocity)
@@ -57,13 +58,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_mea
 			time_diff = current_time - previous_time
 
 			if time_diff > 3.001:
-				print(time.time())
 				previous_time = current_time
 
 				# compute Area Control Error (ACE)
 				ace_float = pi(ang_velocity_float)
 				ace = bytearray(struct.pack('>f', ace_float))
 
+				print(ang_velocity_float, ace_float)
 				s.sendall(ace)
 
 				frequency = ang_velocity_float / (2 * 3.14159265359)
