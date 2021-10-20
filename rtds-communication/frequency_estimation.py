@@ -37,20 +37,19 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_mea
 		# convert hexademical data point to float
 		power_gen1_float = struct.unpack('>f', binascii.unhexlify(power_gen1_hex))[0]
 
-		# angular velocity estimation => w = 2*pi*(P-P0)/R - w0
-		# TODO verify the value of P0
-		ang_velocity_estimation = (2 * 3.14159265359)(power_gen1_float - 50.0)/0.05 - 377.0
+		# angular velocity estimation => w = 2*pi*(P-P0)/R + w0
+		ang_velocity_estimation = -(2 * 3.14159265359)*(power_gen1_float - 71.67)/34.02 + 377.0
 
 		# select sampling time
 		current_time = time.time_ns() / (10 ** 9)
 		time_diff = current_time - previous_time
 
 		if time_diff > 3.001:
-			print(time.time())
 			previous_time = current_time
 
 			# compute Area Control Error (ACE)
 			ace_float = pi(ang_velocity_estimation)
+			print(ace_float)
 			ace = bytearray(struct.pack('>f', ace_float))
 
 			s.sendall(ace)
