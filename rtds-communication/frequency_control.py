@@ -49,9 +49,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_mea
 			
 			# convert received data point from bytes to hex
 			ang_velocity_hex = binascii.hexlify(ang_velocity)
+			power_gen1_hex = binascii.hexlify(power_gen1)
 			
 			# convert hexademical data point to float
 			ang_velocity_float = struct.unpack('>f', binascii.unhexlify(ang_velocity_hex))[0]
+			power_gen1_float = struct.unpack('>f', binascii.unhexlify(power_gen1_hex))[0]
 
 			# select sampling time
 			current_time = time.time_ns() / (10 ** 9)
@@ -64,8 +66,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_mea
 				ace_float = pi(ang_velocity_float)
 				ace = bytearray(struct.pack('>f', ace_float))
 
-				print(ang_velocity_float, ace_float)
+				print(power_gen1_float, ang_velocity_float, ace_float)
 				s.sendall(ace)
 
 				frequency = ang_velocity_float / (2 * 3.14159265359)
-				f.write(str(ang_velocity_float) + ' ' + str(ace_float) + '\n')
+				f.write(str(power_gen1_float) + ', ' + str(ang_velocity_float) + ', ' + str(ace_float) + '\n')
