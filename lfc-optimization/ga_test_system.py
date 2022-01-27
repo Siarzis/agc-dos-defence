@@ -12,7 +12,7 @@ def fitness_func(solution, solution_idx):
 	plant = 1 / (s**2 + 10*s + 20)
 	controller = Kp + Ki/s + Kd*s
 	
-	error = abs(0 - step_response(feedback(plant, controller)).outputs)
+	error = abs(0 - step_response(feedback(plant, controller)).outputs)**2
 
 	# TODO GA parameter: error criterion
 	J = simpson(error)
@@ -23,8 +23,8 @@ def fitness_func(solution, solution_idx):
 
 	return fitness
 
-ga_instance = pygad.GA(num_generations = 10,
-					   sol_per_pop=10,
+ga_instance = pygad.GA(num_generations = 3000,
+					   sol_per_pop=15,
 					   num_parents_mating=5,
 					   fitness_func=fitness_func,
 					   num_genes=3)
