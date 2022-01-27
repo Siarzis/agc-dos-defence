@@ -4,19 +4,29 @@ import pygad
 
 import matplotlib.pyplot as plt
 
+# In this script
+
 def fitness_func(solution, solution_idx):
-	s = tf('s')
 	
+	# define the control system for optimization
+
+	s = tf('s')
+
 	Kp, Ki, Kd = solution
 	
 	plant = 1 / (s**2 + 10*s + 20)
 	controller = Kp + Ki/s + Kd*s
+	system = feedback(plant, controller)
+
+	# define the error criterion for the Genetic Algorithm
 	
-	error = abs(0 - step_response(feedback(plant, controller)).outputs)**2
+	error = abs(0 - step_response(system).outputs)**2
 
 	# TODO GA parameter: error criterion
 	J = simpson(error)
 	
+	# define fitness function
+
 	# the following division is required because fitness score has to be
 	# maximized in GAs
 	fitness = 1.0 / J
