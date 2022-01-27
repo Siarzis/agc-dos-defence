@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 
 s = tf('s')
 
+# In this script, the Load Frequency Control system of a single
+# area is defined by its Transfer Function. The system converges
+
 # Parameters
 Kps, Tps = 1, 20
 Kg, Tg = 1, 0.8
