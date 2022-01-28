@@ -33,7 +33,7 @@ def fitness_func(solution, solution_idx):
 
 	return fitness
 
-ga_instance = pygad.GA(num_generations = 3000,
+ga_instance = pygad.GA(num_generations = 500,
 					   sol_per_pop=15,
 					   num_parents_mating=5,
 					   fitness_func=fitness_func,
