@@ -55,8 +55,6 @@ F = [[-Kps1/Tps1, 0],
 
 BF = np.concatenate([B, F], axis=1).tolist()
 
-print(BF)
-
 C = [[1.0, 0, 0, 0, 0, 0, 0, 0, 0],
 	 [0, 0, 0, 1.0, 0, 0, 0, 0, 0],
 	 [0, 0, 0, 0, 0, 0, 0, 1.0, 0],
@@ -67,6 +65,8 @@ two_area = ss(A, BF, C, 0)
 
 response = step_response(two_area)
 
-plt.plot(response.time, response.outputs)
+print(response.outputs.shape)
+
+plt.plot(response.time, response.outputs[0][2])
 
 plt.show()
