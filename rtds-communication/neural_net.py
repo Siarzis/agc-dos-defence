@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-from sklearn.metrics import mean_absolute_error as mae
+# from sklearn.metrics import mean_absolute_error as mae
 
 w = 100
 
@@ -88,11 +88,11 @@ for e in range(number_of_epochs):
 		loss.backward()
 		optimizer.step()
 
-results = [neural_net(t[0]) for t in test_dataset]
-target = [t[1] for t in test_dataset]
-input_timeseries = [t[0][0] for t in test_dataset]
+results = [neural_net(t[0]).detach().numpy() for t in test_dataset]
+target = [t[1].detach().numpy() for t in test_dataset]
+input_timeseries = [t[0][0].detach().numpy() for t in test_dataset]
 
-print('Mean Absolute Error:', mae(target, results))
+# print('Mean Absolute Error:', mae(target, results))
 
 plt.grid()
 plt.title('Line Graph')
