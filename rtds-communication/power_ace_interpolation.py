@@ -5,7 +5,7 @@ with open("C:\\Users\\andre\\Documents\\data\\frequency_ace_measurements\\power_
 	lines = f.readlines()
 	power = [float(line.split(',')[0]) for line in lines]
 	velocity = [float(line.split(',')[1]) for line in lines]
-	ace = [float(line.split(',')[2]) for line in lines]
+	ace = [float(line.split(',')[1]) for line in lines]
 
 time = 220
 
@@ -25,6 +25,10 @@ axs[0].set_title('Active Power G1')
 axs[1].scatter(x_sample, ace_interp, s=1, c = ['tab:orange'])
 axs[1].scatter(x, ace[:time], s=3)
 axs[1].set_title('ACE')
+
+# with open("measurements_generation.txt", "w") as f:
+# 	for i in range(len(power_interp)):
+# 		f.write(str(power_interp[i]) + ', ' + str(ace_interp[i]) + '\n')
 
 # axs[2].plot(velocity[:220])
 # axs[2].set_title('Angular Velocity')
