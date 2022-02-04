@@ -11,12 +11,18 @@ def window_stack(a, stepsize=1, width=3):
 	n = a.shape[0]
 	return np.hstack(a[i:1+n+i-width:stepsize] for i in range(0,width))
 
+# main objective of Dataset class -> return a pair of [input, label] 
+# represents the dataset as an object of a class, not a  set of data and labels
 class PrepareData(Dataset):
-		
-	def __init__(self, np_array, w):
+
+	def __init__(self, filename, w):
 		# use 'a.reshape(-1, 1)' for line regression or '(3 + np.sin(a)).reshape(-1, 1)' for sine regression
 		# x_train = a.reshape(-1, 1)
 		self.x = (np.sin(np_array[w:])).reshape(-1, 1)
+		# results of np.pad(self.x, ((w, 0), (0, 0)))
+		# [[a1, a2, a3],    [[0., a1, a2, a3],
+		#  [a4, a5, a6], ->  [0., a4, a5, a6],
+		#  [a7, a8, a9]]     [0., a7, a8, a9]] 
 		self.x = np.pad(self.x, ((w, 0), (0, 0)), 'constant', constant_values=(0.0))
 		self.x = window_stack(self.x[:-1], width = w).astype(np.float32)
 		self.x = torch.from_numpy(self.x)
@@ -25,17 +31,26 @@ class PrepareData(Dataset):
 		# y_train = (10 - a[10:]).reshape(-1, 1).astype(np.float32)
 		self.y = (np.cos(np_array[w:])).reshape(-1, 1).astype(np.float32)
 		self.y = torch.from_numpy(self.y)
+
+		with open(filename) as f:
+			lines = f.readlines()
+			power = [float(line.split(',')[0]) for line in lines]
+			velocity = [float(line.split(',')[1]) for line in lines]
+			ace = [float(line.split(',')[2]) for line in lines]
     
 	def __len__(self):
 		return len(self.x)
     
+	# function that returns one training example, a pair of [input, label] 
 	def __getitem__(self, index):
 		_x = self.x[index]
 		_y = self.y[index]
         
 		return _x, _y
 
+# DataLoader provides useful functionalities like batch training, multiprocessing, etc.
 train_dataloader = DataLoader(dataset=PrepareData(np.arange(0, 10, 0.01), w), batch_size=64)
+
 test_dataset = PrepareData(np.arange(20, 30, 0.01), w)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
