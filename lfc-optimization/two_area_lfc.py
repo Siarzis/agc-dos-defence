@@ -61,26 +61,30 @@ C = [[1.0, 0, 0, 0, 0, 0, 0, 0, 0],
 	 [0, 0, 0, 0, 0, 0, 0, 0, 1.0]
 	]
 
+from pprint import pprint
+pprint(BF)
+
+
 two_area_lfc = ss(A, BF, C, 0)
 
 T = np.arange(0, 30, 0.1, dtype=float).tolist()
 
-U = [np.zeros_like(T).tolist(), np.zeros_like(T).tolist(), np.ones_like(T).tolist(), np.zeros_like(T).tolist()]
+U = [ np.zeros_like(T).tolist(), np.zeros_like(T).tolist(), np.ones_like(T).tolist(), np.zeros_like(T).tolist()]
 
 t, y = forced_response(two_area_lfc, T=T, U=U)
 
-fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True)
+# fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True)
 
-ax1.plot(t, y[0])
-ax1.set_title('Output 1')
+plt.plot(t, y[0])
+# ax1.set_title('Output 1')
 
-ax2.plot(t, y[1])
-ax2.set_title('Output 2')
+# ax2.plot(t, y[1])
+# ax2.set_title('Output 2')
 
-ax3.plot(t, y[2])
-ax3.set_title('Output 3')
+# ax3.plot(t, y[2])
+# ax3.set_title('Output 3')
 
-ax4.plot(t, y[3])
-ax4.set_title('Output 4')
+# ax4.plot(t, y[3])
+# ax4.set_title('Output 4')
 
 plt.show()
