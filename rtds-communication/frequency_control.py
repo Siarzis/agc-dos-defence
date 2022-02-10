@@ -59,7 +59,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("frequency_mea
 			current_time = time.time_ns() / (10 ** 9)
 			time_diff = current_time - previous_time
 
-			if time_diff > 3.001:
+			if time_diff > 0.101:
 				previous_time = current_time
 
 				# compute Area Control Error (ACE)
