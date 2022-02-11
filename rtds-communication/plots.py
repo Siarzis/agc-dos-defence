@@ -12,15 +12,17 @@ with open('rtds_server.yaml', 'r') as stream:
 with open(filename) as f:
 	lines = f.readlines()
 	power = [float(line.split(',')[0]) for line in lines]
-	velocity = [float(line.split(',')[1]) for line in lines]
-	ace = [float(line.split(',')[2]) for line in lines]
+	ace1 = [float(line.split(',')[1]) for line in lines]
+	ace2 = [float(line.split(',')[2]) for line in lines]
 
 fig, axs = plt.subplots(2)
 
-axs[0].plot(power)
+windows_start, window_end = 0, 20000
+
+axs[0].plot(power[windows_start:window_end])
 axs[0].set_title('Active Power G1')
 
-axs[1].plot(ace)
+axs[1].plot(ace1[windows_start:window_end])
 axs[1].set_title('ACE')
 
 axs[0].grid()
