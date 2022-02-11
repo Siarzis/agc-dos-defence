@@ -4,20 +4,13 @@ import struct
 import binascii
 import yaml
 
-# variable to choose test TCP server or RTDS TCP server
-test = False
-
-if test:
-	IP = '127.0.0.1'
-	PORT = 65432
-else:
-	with open('rtds_server.yaml', 'r') as stream:
-		try:
-			rtds_credentials = yaml.safe_load(stream)
-			IP = rtds_credentials.get('ADDRESS')['IP']
-			PORT = rtds_credentials.get('ADDRESS')['PORT']
-		except yaml.YAMLError as exc:
-			print(exc)
+with open('rtds_server.yaml', 'r') as stream:
+	try:
+		rtds_credentials = yaml.safe_load(stream)
+		IP = rtds_credentials.get('ADDRESS')['IP']
+		PORT = rtds_credentials.get('ADDRESS')['PORT']
+	except yaml.YAMLError as exc:
+		print(exc)
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("power_ace_11-02-2022.txt", "w") as f:
