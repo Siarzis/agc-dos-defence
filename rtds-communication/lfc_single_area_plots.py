@@ -5,7 +5,7 @@ import yaml
 with open('rtds_server.yaml', 'r') as stream:
 		try:
 			filename_paths = yaml.safe_load(stream)
-			filename =  filename_paths.get('plots')['dataset']
+			filename =  filename_paths.get('plots')['dataset1']
 		except yaml.YAMLError as exc:
 			print(exc)
 
@@ -15,7 +15,7 @@ with open(filename) as f:
 	speed = [float(line.split(',')[1]) for line in lines]
 	ace = [float(line.split(',')[2]) for line in lines]
 
-start, end, step = 0000, 10000, 1
+start, end, step = 0000, 12000, 1
 
 fig, axs = plt.subplots(2)
 

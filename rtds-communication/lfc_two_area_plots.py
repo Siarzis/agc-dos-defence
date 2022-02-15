@@ -5,7 +5,7 @@ import yaml
 with open('rtds_server.yaml', 'r') as stream:
 		try:
 			filename_paths = yaml.safe_load(stream)
-			filename =  filename_paths.get('plots')['dataset']
+			filename =  filename_paths.get('plots')['dataset2']
 		except yaml.YAMLError as exc:
 			print(exc)
 

@@ -54,7 +54,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("power_tie_ace
 			# ace_float = pi(ang_velocity_float)
 			# ace = bytearray(struct.pack('>f', ace_float))
 
-			# print(power_gen1_float, ang_velocity_float, ace_float)
+			print(power_float, tie_line3_float, tie_line4_float, ace1_float, ace2_float)
 			# s.sendall(ace)
 
 			# frequency = ang_velocity_float / (2 * 3.14159265359)
