@@ -31,8 +31,7 @@ class PrepareData(Dataset):
 		#  	   	     [a1]
 		#  	 		 [a2]
 		#			 [a3]]
-		self.x = np.pad(self.x, ((w, 0), (0, 0)))
-		np.set_printoptions(threshold=np.inf)
+		self.x = np.pad(self.x, ((w, 0), (0, 0)), 'constant', constant_values=(self.x[0]))
 		# the result of the window_stack() is:
 		# [  0.        ]	[  0.         0.         0.         0.         0.      ]
 		# [  0.        ]	[  0.         0.         0.         0.       107.484505]
@@ -59,83 +58,94 @@ class PrepareData(Dataset):
         
 		return _x, _y
 
-w = 5
 
 with open('rtds_server.yaml', 'r') as stream:
 		try:
 			filename_paths = yaml.safe_load(stream)
-			filename =  filename_paths.get('files')['train_1']
+			train_file =  filename_paths.get('files')['train_1']
+			test_file =  filename_paths.get('files')['test_1']
 		except yaml.YAMLError as exc:
 			print(exc)
 
+# hyperparameter definition
+
+w = 20
+learning_rate = 0.0001
+input_neurons = w
+hidden_neurons_1 = 8
+output_neurons = 1
+number_of_epochs = 200
+bs = 64
+
 # DataLoader provides useful functionalities like batch training, multiprocessing, etc.
-train_dataset = PrepareData(filename, w)
+train_dataset = PrepareData(train_file, w)
+train_dataloader = DataLoader(dataset=PrepareData(train_file, w), batch_size=bs)
+test_dataset = PrepareData(test_file, w)
 
-train_dataloader = DataLoader(dataset=PrepareData(filename, w), batch_size=64)
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+print('Using {} device'.format(device))
 
-# test_dataset = PrepareData(np.arange(20, 30, 0.01), w)
+class Net(torch.nn.Module):
 
-# device = 'cuda' if torch.cuda.is_available() else 'cpu'
-# print('Using {} device'.format(device))
+	def __init__(self, n_feature, n_hidden_1, n_output):
+		super(Net, self).__init__()
+		self.linear_relu_stack = nn.Sequential(
+			nn.Linear(n_feature, n_hidden_1),
+			nn.ReLU(),
+			nn.Linear(n_hidden_1, n_output),
+		)
 
-# # hyperparameter definition
+	def forward(self, x):
+		x = self.linear_relu_stack(x)
+		return x
 
-# learning_rate = 0.002
-# input_neurons = w
-# hidden_neurons_1 = 20
-# output_neurons = 1
-# number_of_epochs = 200
+# define Neural Net architecture
+neural_net = Net(n_feature = input_neurons,
+				 n_hidden_1 = hidden_neurons_1,
+				 n_output= output_neurons)
 
-# class Net(torch.nn.Module):
-		
-# 	def __init__(self, n_feature, n_hidden_1, n_output):
-# 		super(Net, self).__init__()
-# 		self.linear_relu_stack = nn.Sequential(
-# 			nn.Linear(n_feature, n_hidden_1),
-# 			nn.ReLU(),
-# 			nn.Linear(n_hidden_1, n_output),
-# 		)
+# configure optimizer
+optimizer = torch.optim.Adam(neural_net.parameters(), lr = learning_rate)
 
-# 	def forward(self, x):
-# 		x = self.linear_relu_stack(x)
-# 		return x
+# select loss function
+loss_function = nn.MSELoss()
 
-# # define Neural Net architecture
-# neural_net = Net(n_feature = input_neurons,
-# 				 n_hidden_1 = hidden_neurons_1,
-# 				 n_output= output_neurons)
+losses = []
+for e in range(number_of_epochs):
+	running_loss = 0.0
 
-# # configure optimizer
-# optimizer = torch.optim.Adam(neural_net.parameters(), lr = learning_rate)
+	# mini-batch Gradient Descent
+	for x_batch, y_batch in train_dataloader:
 
-# # select loss function
-# loss_function = nn.MSELoss()
+		# forward pass
+		prediction = neural_net(x_batch)
 
-# for e in range(number_of_epochs):
+		loss = loss_function(prediction, y_batch.float())
 
-# 	# mini-batch Gradient Descent
-# 	for x_batch, y_batch in train_dataloader:
+		# backward pass
+		optimizer.zero_grad()
+		loss.backward()
+		optimizer.step()
 
-# 		# forward pass
-# 		prediction = neural_net(x_batch)
-# 		loss = loss_function(prediction, y_batch)
+		running_loss += loss.item() * x_batch.size(0)
 
-# 		# backward pass 
-# 		optimizer.zero_grad()
-# 		loss.backward()
-# 		optimizer.step()
+	epoch_loss = running_loss / len(x_batch)
+	losses.append(epoch_loss)
 
-# results = [neural_net(t[0]).detach().numpy() for t in test_dataset]
-# target = [t[1].detach().numpy() for t in test_dataset]
-# input_timeseries = [t[0][0].detach().numpy() for t in test_dataset]
-
-# # print('Mean Absolute Error:', mae(target, results))
-
-# plt.grid()
-# plt.title('Line Graph')
-# plt.xlabel('X axis')
-# plt.ylabel('Y axis')
-# plt.plot(results, color = 'blue')
-# plt.plot(target, color = 'green')
-# plt.plot(input_timeseries, color = 'red')
+# plt.plot(losses)
 # plt.show()
+
+results = [neural_net(t[0]).detach().numpy() for t in test_dataset]
+target = [t[1].detach().numpy() for t in test_dataset]
+input_timeseries = [t[0][0].detach().numpy() for t in test_dataset]
+
+# print('Mean Absolute Error:', mae(target, results))
+
+plt.grid()
+plt.title('Line Graph')
+plt.xlabel('X axis')
+plt.ylabel('Y axis')
+plt.plot(results, color = 'blue')
+plt.plot(target, color = 'green')
+# plt.plot(input_timeseries, color = 'red')
+plt.show()

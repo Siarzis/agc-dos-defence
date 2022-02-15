@@ -13,7 +13,7 @@ with open('rtds_server.yaml', 'r') as stream:
 		print(exc)
 
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("power_ace_11-02-2022.txt", "w") as f:
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("power_tie_ace_15-02-2022.txt", "w") as f:
 	s.connect((IP, PORT))
 	print('Successfully conected to %s:%i' % (IP , PORT))
 		
@@ -58,4 +58,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s, open("power_ace_11-
 			# s.sendall(ace)
 
 			# frequency = ang_velocity_float / (2 * 3.14159265359)
-			f.write(str(power_float) + ', ' + str(ace1_float) + ', ' + str(ace2_float) + '\n')
+			f.write(str(power_float) + ', ' + str(tie_line3_float) + ', ' + str(tie_line4_float) + ', ' + str(ace1_float) + ', ' + str(ace2_float) + '\n')
